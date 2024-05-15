@@ -13,8 +13,6 @@
 #define CDIR_KEY        "cd"
 #define STAT_KEY        "status"
 
-#define LIST_KEY        "ls"
-
 #define MAX_CHAR        2048
 #define MAX_ARG         512
 
@@ -25,6 +23,8 @@
 #define BACKGROUND_KEY  "&"
 
 #define PID_SYMBOL      "$$"
+
+volatile sig_atomic_t sigint_received = 0;
 
 struct arr {
     char* command[MAX_ARG];
@@ -41,36 +41,6 @@ struct arr {
 
     int exit_flag;
 };
-
-/* void list(char* cwd) {
-    DIR *root;
-    struct dirent *entry;
-
-    root = opendir(cwd);
-    
-    if (root == NULL)
-    {
-        printf("Error opening directory.\n");
-        fflush(stderr);
-        return;
-    }
-
-    while ((entry = readdir(root)) != NULL)
-    {
-        printf("%s  ", entry->d_name);
-        fflush(stderr);
-    }
-    printf("\n");
-    fflush(stderr);
-    
-    if (closedir(root) == -1)
-    {
-        printf("Error closing directory.\n");
-        fflush(stderr);
-        return;
-    }
-
-} */
 
 void print_console (char input[MAX_CHAR], char cwd[1024]) {
     char userInput[MAX_CHAR];
@@ -267,9 +237,19 @@ void sigchld_handler(int signum) {
     is not already dead, return (pid_t) 0. If successful,
     return PID and store the dead child's status in STAT_LOC. 
     */
+   /* printf("in the sig child handler\n"); */
     while ((pid = waitpid(-1, &status, WNOHANG)) > 0) {
-        printf("Child process with PID %d terminated\n", pid);
+        printf("Cdhild process with PID %d terminated\n", pid);
     }
+}
+
+void sigint_handler (int signum) {
+    printf("\n");
+    sigint_received = 0;
+}
+
+void sigstp_handler () {
+    printf("SIGSTP HANDLED\n");
 }
 
 void replace_PID_SYMBOL(struct arr* cmd) {
@@ -293,72 +273,71 @@ void replace_PID_SYMBOL(struct arr* cmd) {
     }
 }
 
+int built_in_commands(struct arr* cmd, int* exit_status) {
+    if (strcmp(cmd->command[0], EXIT_KEY) == 0) {
+        exit_smallsh(cmd);
+        free_cmd(cmd);
+        return 0;
+    } else if (strcmp(cmd->command[0], CDIR_KEY) == 0) {
+        change_dir(cmd);
+    } else if (strcmp(cmd->command[0], STAT_KEY) == 0) {
+        display_status(cmd, *exit_status);
+    }
 
-int main(void)
-{
+    return 1;
+}
+
+void run_smallsh(struct arr* cmd, char input[MAX_CHAR]) {
     
-    char cwd[MAX_CHAR]; /* buffer to hold current directory path */
-    char input[MAX_CHAR];
     int exit_status = 0;
 
-    struct arr cmd;
-    cmd.arg_num = 0;
-    cmd.exit_flag = 0;
-
+    char cwd[MAX_CHAR];
     getcwd(cwd, sizeof(cwd));
 
-    /* print_console(input, cwd); */
+    signal(SIGINT, sigint_handler);
+    signal(SIGTSTP, sigstp_handler);
 
     do {
         print_console(input, cwd);
 
-        cmd.background_process_flag = 0;
-        cmd.built_in_command_flag = 0;
-        cmd.output_bool = 0;
-        cmd.input_bool = 0;
+        cmd->background_process_flag = 0;
+        cmd->built_in_command_flag = 0;
+        cmd->output_bool = 0;
+        cmd->input_bool = 0;
 
         /* parse the input into the command variable, an array of strings (char*) */
-        process_input(input, &cmd);
+        process_input(input, cmd);
 
         /* check for proper amount of arguements */
-        if (cmd.arg_num <= 0) {
+        if (cmd->arg_num <= 0) {
             continue;
         }
+
+        replace_PID_SYMBOL(cmd);
 
         /* check for comments */
-        if (cmd.command[0][0] && cmd.command[0][0] == '#') {
+        if (cmd->command[0][0] && cmd->command[0][0] == '#') {
             continue;
         }
 
-
-        replace_PID_SYMBOL(&cmd);
-        
-
-
-        if (strcmp(cmd.command[cmd.arg_num - 1], BACKGROUND_KEY) == 0) {
+        /* check if the command is a background process */
+        if (strcmp(cmd->command[cmd->arg_num - 1], BACKGROUND_KEY) == 0) {
             fflush(stderr);
-            cmd.background_process_flag = 1;
-            remove_from_command(&cmd, cmd.arg_num - 1);
+            cmd->background_process_flag = 1;
+            remove_from_command(cmd, cmd->arg_num - 1);
         }
 
         /* sets the input and output file if the special characters exist */
-        get_input_output_background(&cmd);
+        get_input_output_background(cmd);
 
-        print_command(cmd);
+        /* print_command(*cmd); */
         
-
-        if (strcmp(cmd.command[0], EXIT_KEY) == 0) {
-            exit_smallsh(&cmd);
-            free_cmd(&cmd);
+        if (built_in_commands(cmd, &exit_status) == 0) {
             break;
-        } else if (strcmp(cmd.command[0], CDIR_KEY) == 0) {
-            change_dir(&cmd);
-        } else if (strcmp(cmd.command[0], STAT_KEY) == 0) {
-            display_status(&cmd, exit_status);
         }
 
-        if (cmd.built_in_command_flag == 1) {
-            free_cmd(&cmd);
+        if (cmd->built_in_command_flag == 1) {
+            free_cmd(cmd);
             continue;
         }
 
@@ -373,25 +352,21 @@ int main(void)
         } else if (pid == 0) {
 
             int output_fd = stdout;
-            printf("sdpojf\n");
             
-            if (cmd.background_process_flag == 0) {
-                if (cmd.output_bool == 1) {
-                    FILE* out = fopen(cmd.output_file, "w");
-                    /* if (out == NULL) {
-                        printf("file not found sunil\n");
-                    } */
+            if (cmd->background_process_flag == 0) {
+                if (cmd->output_bool == 1) {
+                    FILE* out = fopen(cmd->output_file, "w");
 
                     fclose(out);
 
-                    output_fd = open(cmd.output_file, O_WRONLY | O_CREAT | O_APPEND, 0666);
+                    output_fd = open(cmd->output_file, O_WRONLY | O_CREAT | O_APPEND, 0666);
                     if (output_fd == -1) {
                         perror("open failed");
                         exit(EXIT_FAILURE);
                     }
                 }
 
-                child_command(&cmd, output_fd);
+                child_command(cmd, output_fd);
 
                 close(output_fd);
 
@@ -410,23 +385,35 @@ int main(void)
                 close(output_fd);
 
                 /* Execute command */
-                child_command(&cmd, original_stdout);
+                child_command(cmd, original_stdout);
 
                 /* Restore stdout */
                 dup2(original_stdout, STDOUT_FILENO);
                 close(original_stdout);
 
-                printf("Background process with PID %d has finished.\n", getpid());
+                /* printf("Background process with PID %d has finished.\n", getpid()); */
                 fflush(stdout);
 
                 exit(EXIT_SUCCESS);
             }
         } else {
-            parent_command(cmd.background_process_flag, pid, &exit_status);
+            parent_command(cmd->background_process_flag, pid, &exit_status);
         }
 
-        free_cmd(&cmd);
-    } while (cmd.exit_flag == 0);
-    // im doing status command rn :333333333333333333333333333333
+        free_cmd(cmd);
+    } while (cmd->exit_flag == 0);
+}
+
+
+int main(void)
+{
+    char input[MAX_CHAR];
+
+    struct arr cmd;
+    cmd.arg_num = 0;
+    cmd.exit_flag = 0;
+
+    run_smallsh(&cmd, input);
+
     return 0;
 }
