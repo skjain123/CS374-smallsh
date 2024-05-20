@@ -1,751 +1,125 @@
 PRE-SCRIPT INFO
-  Grading Script PID: 143232
+  Grading Script PID: 180550
   Note: your smallsh will report a different PID when evaluating $$
-BEGINNING TEST SCRIPT
-
---------------------
-Using comment (5 points if only next prompt is displayed next)
-
-
---------------------
-ls (10 points for returning dir contents)
-
-
---------------------
-ls out junk
-
-
---------------------
-cat junk (15 points for correctly returning contents of junk)
-cat: junk: No such file or directory
-
-
---------------------
-wc in junk (15 points for returning correct numbers from wc)
-wc: <: No such file or directory
-wc: junk: No such file or directory
-0 0 0 total
-
-
---------------------
-wc in junk out junk2; cat junk2 (10 points for returning correct numbers from wc)
-wc: <: No such file or directory
-wc: junk: No such file or directory
-wc: >: No such file or directory
+: BEGINNING TEST SCRIPT
+: 
+: --------------------
+: Using comment (5 points if only next prompt is displayed next)
+: : 
+: 
+: --------------------
+: ls (10 points for returning dir contents)
+: junk
+main.c
+main.o
+makefile
+mytestresults
+p3testscript
+run.bash
+smallsh
+: 
+: 
+: --------------------
+: ls out junk
+: : 
+: 
+: --------------------
+: cat junk (15 points for correctly returning contents of junk)
+: junk
+main.c
+main.o
+makefile
+mytestresults
+p3testscript
+run.bash
+smallsh
+: 
+: 
+: --------------------
+: wc in junk (15 points for returning correct numbers from wc)
+:  8  8 72
+: 
+: 
+: --------------------
+: wc in junk out junk2; cat junk2 (10 points for returning correct numbers from wc)
+: wc: >: No such file or directory
 wc: junk2: No such file or directory
 0 0 0 total
-cat: junk2: No such file or directory
+: cat: junk2: No such file or directory
+: 
+: 
+: --------------------
+: test -f badfile (10 points for returning error value of 1, note extraneous &)
+: : exit value 1
+: 
+: 
+: --------------------
+: wc in badfile (10 points for returning text error)
+: open input file: No such file or directory
+: 
+: 
+: --------------------
+: badfile (10 points for returning text error)
+: execvp failed: No such file or directory
+: 
+: 
+: --------------------
+: sleep 100 background (10 points for returning process ID of sleeper)
+: : background pid is 180601
 
+: 
+: --------------------
+: pkill -signal SIGTERM sleep (10 points for pid of killed process, 10 points for signal)
+: (Ignore message about Operation Not Permitted)
+: pkill: killing pid 2130 failed: Operation not permitted
+pkill: killing pid 172570 failed: Operation not permitted
+pkill: killing pid 172582 failed: Operation not permitted
+pkill: killing pid 178565 failed: Operation not permitted
+pkill: killing pid 178572 failed: Operation not permitted
+pkill: killing pid 179009 failed: Operation not permitted
+pkill: killing pid 179779 failed: Operation not permitted
+pkill: killing pid 179824 failed: Operation not permitted
+pkill: killing pid 180481 failed: Operation not permitted
+pkill: killing pid 206640 failed: Operation not permitted
+pkill: killing pid 258638 failed: Operation not permitted
+background pid 180601 is done: terminated by signal 15
+: 
+: 
+: --------------------
+: sleep 1 background (10 pts for pid of bg ps when done, 10 for exit value)
+: : background pid is 180612
+: background pid 180612 is done: exit value 0
 
---------------------
-test -f badfile (10 points for returning error value of 1, note extraneous &)
-
-
---------------------
-wc in badfile (10 points for returning text error)
-wc: <: No such file or directory
-wc: badfile: No such file or directory
-0 0 0 total
-
-
---------------------
-badfile (10 points for returning text error)
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: BEGINNING
-Argument 2: TEST
-Argument 3: SCRIPT
-command length: 4
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: --------------------
-command length: 2
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: Using
-Argument 2: comment
-Argument 3: (5
-Argument 4: points
-Argument 5: if
-Argument 6: only
-Argument 7: next
-Argument 8: prompt
-Argument 9: is
-Argument 10: displayed
-Argument 11: next)
-command length: 12
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: --------------------
-command length: 2
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: ls
-Argument 2: (10
-Argument 3: points
-Argument 4: for
-Argument 5: returning
-Argument 6: dir
-Argument 7: contents)
-command length: 8
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: ls
-command length: 1
-.  ..  main.c  main.o  root  run.bash  makefile  testdir$$  mytestresults  p3testscript  smallsh  
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: --------------------
-command length: 2
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: ls
-Argument 2: out
-Argument 3: junk
-command length: 4
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: ls
-Argument 1: >
-Argument 2: junk
-command length: 3
-.  ..  main.c  main.o  root  run.bash  makefile  testdir$$  mytestresults  p3testscript  smallsh  
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: --------------------
-command length: 2
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: cat
-Argument 2: junk
-Argument 3: (15
-Argument 4: points
-Argument 5: for
-Argument 6: correctly
-Argument 7: returning
-Argument 8: contents
-Argument 9: of
-Argument 10: junk)
-command length: 11
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: cat
-Argument 1: junk
-command length: 2
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: --------------------
-command length: 2
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: wc
-Argument 2: in
-Argument 3: junk
-Argument 4: (15
-Argument 5: points
-Argument 6: for
-Argument 7: returning
-Argument 8: correct
-Argument 9: numbers
-Argument 10: from
-Argument 11: wc)
-command length: 12
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: wc
-Argument 1: <
-Argument 2: junk
-command length: 3
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: --------------------
-command length: 2
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: wc
-Argument 2: in
-Argument 3: junk
-Argument 4: out
-Argument 5: junk2;
-Argument 6: cat
-Argument 7: junk2
-Argument 8: (10
-Argument 9: points
-Argument 10: for
-Argument 11: returning
-Argument 12: correct
-Argument 13: numbers
-Argument 14: from
-Argument 15: wc)
-command length: 16
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: wc
-Argument 1: <
-Argument 2: junk
-Argument 3: >
-Argument 4: junk2
-command length: 5
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: cat
-Argument 1: junk2
-command length: 2
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: --------------------
-command length: 2
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: test
-Argument 2: -f
-Argument 3: badfile
-Argument 4: (10
-Argument 5: points
-Argument 6: for
-Argument 7: returning
-Argument 8: error
-Argument 9: value
-Argument 10: of
-Argument 11: 1,
-Argument 12: note
-Argument 13: extraneous
-Argument 14: &)
-command length: 15
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: test
-Argument 1: -f
-Argument 2: badfile
-command length: 3
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: status
-Argument 1: &
-command length: 2
-print status
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: --------------------
-command length: 2
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: wc
-Argument 2: in
-Argument 3: badfile
-Argument 4: (10
-Argument 5: points
-Argument 6: for
-Argument 7: returning
-Argument 8: text
-Argument 9: error)
-command length: 10
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: wc
-Argument 1: <
-Argument 2: badfile
-command length: 3
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: --------------------
-command length: 2
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: badfile
-Argument 2: (10
-Argument 3: points
-Argument 4: for
-Argument 5: returning
-Argument 6: text
-Argument 7: error)
-command length: 8
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: badfile
-command length: 1
-Error executing command.
-
-
---------------------
-sleep 100 background (10 points for returning process ID of sleeper)
-sleep: invalid time interval ‘&’
-Try 'sleep --help' for more information.
-
-
---------------------
-pkill -signal SIGTERM sleep (10 points for pid of killed process, 10 points for signal)
-(Ignore message about Operation Not Permitted)
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: BEGINNING
-Argument 2: TEST
-Argument 3: SCRIPT
-command length: 4
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: --------------------
-command length: 2
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: Using
-Argument 2: comment
-Argument 3: (5
-Argument 4: points
-Argument 5: if
-Argument 6: only
-Argument 7: next
-Argument 8: prompt
-Argument 9: is
-Argument 10: displayed
-Argument 11: next)
-command length: 12
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: --------------------
-command length: 2
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: ls
-Argument 2: (10
-Argument 3: points
-Argument 4: for
-Argument 5: returning
-Argument 6: dir
-Argument 7: contents)
-command length: 8
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: ls
-command length: 1
-.  ..  main.c  main.o  root  run.bash  makefile  testdir$$  mytestresults  p3testscript  smallsh  
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: --------------------
-command length: 2
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: ls
-Argument 2: out
-Argument 3: junk
-command length: 4
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: ls
-Argument 1: >
-Argument 2: junk
-command length: 3
-.  ..  main.c  main.o  root  run.bash  makefile  testdir$$  mytestresults  p3testscript  smallsh  
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: --------------------
-command length: 2
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: cat
-Argument 2: junk
-Argument 3: (15
-Argument 4: points
-Argument 5: for
-Argument 6: correctly
-Argument 7: returning
-Argument 8: contents
-Argument 9: of
-Argument 10: junk)
-command length: 11
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: cat
-Argument 1: junk
-command length: 2
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: --------------------
-command length: 2
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: wc
-Argument 2: in
-Argument 3: junk
-Argument 4: (15
-Argument 5: points
-Argument 6: for
-Argument 7: returning
-Argument 8: correct
-Argument 9: numbers
-Argument 10: from
-Argument 11: wc)
-command length: 12
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: wc
-Argument 1: <
-Argument 2: junk
-command length: 3
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: --------------------
-command length: 2
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: wc
-Argument 2: in
-Argument 3: junk
-Argument 4: out
-Argument 5: junk2;
-Argument 6: cat
-Argument 7: junk2
-Argument 8: (10
-Argument 9: points
-Argument 10: for
-Argument 11: returning
-Argument 12: correct
-Argument 13: numbers
-Argument 14: from
-Argument 15: wc)
-command length: 16
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: wc
-Argument 1: <
-Argument 2: junk
-Argument 3: >
-Argument 4: junk2
-command length: 5
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: cat
-Argument 1: junk2
-command length: 2
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: --------------------
-command length: 2
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: test
-Argument 2: -f
-Argument 3: badfile
-Argument 4: (10
-Argument 5: points
-Argument 6: for
-Argument 7: returning
-Argument 8: error
-Argument 9: value
-Argument 10: of
-Argument 11: 1,
-Argument 12: note
-Argument 13: extraneous
-Argument 14: &)
-command length: 15
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: test
-Argument 1: -f
-Argument 2: badfile
-command length: 3
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: status
-Argument 1: &
-command length: 2
-print status
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: --------------------
-command length: 2
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: wc
-Argument 2: in
-Argument 3: badfile
-Argument 4: (10
-Argument 5: points
-Argument 6: for
-Argument 7: returning
-Argument 8: text
-Argument 9: error)
-command length: 10
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: wc
-Argument 1: <
-Argument 2: badfile
-command length: 3
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: --------------------
-command length: 2
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: badfile
-Argument 2: (10
-Argument 3: points
-Argument 4: for
-Argument 5: returning
-Argument 6: text
-Argument 7: error)
-command length: 8
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: badfile
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: --------------------
-command length: 2
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: sleep
-Argument 2: 100
-Argument 3: background
-Argument 4: (10
-Argument 5: points
-Argument 6: for
-Argument 7: returning
-Argument 8: process
-Argument 9: ID
-Argument 10: of
-Argument 11: sleeper)
-command length: 12
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: sleep
-Argument 1: 100
-Argument 2: &
-command length: 3
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: --------------------
-command length: 2
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: pkill
-Argument 2: -signal
-Argument 3: SIGTERM
-Argument 4: sleep
-Argument 5: (10
-Argument 6: points
-Argument 7: for
-Argument 8: pid
-Argument 9: of
-Argument 10: killed
-Argument 11: process,
-Argument 12: 10
-Argument 13: points
-Argument 14: for
-Argument 15: signal)
-command length: 16
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: (Ignore
-Argument 2: message
-Argument 3: about
-Argument 4: Operation
-Argument 5: Not
-Argument 6: Permitted)
-command length: 7
-smallsh ~/nfs/stak/users/jainsu/CS_CLApkill: killing pid 142424 failed: Operation not permitted
-pkill: killing pid 142854 failed: Operation not permitted
-pkill: killing pid 143103 failed: Operation not permitted
-
-
---------------------
-sleep 1 background (10 pts for pid of bg ps when done, 10 for exit value)
-sleep: invalid time interval ‘&’
-Try 'sleep --help' for more information.
-
-
---------------------
-pwd
-/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3
-
-
---------------------
-cd
-
-
---------------------
-pwd (10 points for being in the HOME dir)
-/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3
-
-
---------------------
-mkdir testdir$$
-mkdir: cannot create directory ‘testdir$$’: File exists
-
-
---------------------
-cd testdir$$
-
-
---------------------
-pwd (5 points for being in the newly created dir)
-/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3
---------------------
-Testing foreground-only mode (20 points for entry & exit text AND ~5 seconds between times)
-kill: cannot find process "$$"
-Mon May  6 11:53:54 PDT 2024
-sleep: invalid time interval ‘&’
-Try 'sleep --help' for more information.
-Mon May  6 11:53:54 PDT 2024
-kill: cannot find process "$$"
-SSES/CS344/hw3 : Argument 0: pkill
-Argument 1: sleep
-command length: 2
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: --------------------
-command length: 2
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: sleep
-Argument 2: 1
-Argument 3: background
-Argument 4: (10
-Argument 5: pts
-Argument 6: for
-Argument 7: pid
-Argument 8: of
-Argument 9: bg
-Argument 10: ps
-Argument 11: when
-Argument 12: done,
-Argument 13: 10
-Argument 14: for
-Argument 15: exit
-Argument 16: value)
-command length: 17
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: sleep
-Argument 1: 1
-Argument 2: &
-command length: 3
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: sleep
-Argument 1: 1
-command length: 2
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: --------------------
-command length: 2
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: pwd
-command length: 2
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: pwd
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: --------------------
-command length: 2
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: cd
-command length: 2
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: cd
-command length: 1
-change dir
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: --------------------
-command length: 2
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: pwd
-Argument 2: (10
-Argument 3: points
-Argument 4: for
-Argument 5: being
-Argument 6: in
-Argument 7: the
-Argument 8: HOME
-Argument 9: dir)
-command length: 10
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: pwd
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: --------------------
-command length: 2
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: mkdir
-Argument 2: testdir$$
-command length: 3
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: mkdir
-Argument 1: testdir$$
-command length: 2
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: --------------------
-command length: 2
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: cd
-Argument 2: testdir$$
-command length: 3
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: cd
-Argument 1: testdir$$
-command length: 2
-change dir
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: --------------------
-command length: 2
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: pwd
-Argument 2: (5
-Argument 3: points
-Argument 4: for
-Argument 5: being
-Argument 6: in
-Argument 7: the
-Argument 8: newly
-Argument 9: created
-Argument 10: dir)
-command length: 11
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: pwd
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: --------------------
-command length: 2
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: echo
-Argument 1: Testing
-Argument 2: foreground-only
-Argument 3: mode
-Argument 4: (20
-Argument 5: points
-Argument 6: for
-Argument 7: entry
-Argument 8: &
-Argument 9: exit
-Argument 10: text
-Argument 11: AND
-Argument 12: ~5
-Argument 13: seconds
-Argument 14: between
-Argument 15: times)
-command length: 16
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: kill
-Argument 1: -SIGTSTP
-Argument 2: $$
-command length: 3
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: date
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: sleep
-Argument 1: 5
-Argument 2: &
-command length: 3
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: date
-command length: 1
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: kill
-Argument 1: -SIGTSTP
-Argument 2: $$
-command length: 3
-smallsh ~/nfs/stak/users/jainsu/CS_CLASSES/CS344/hw3 : Argument 0: exit
-command length: 1
+: 
+: --------------------
+: pwd
+: /nfs/stak/users/jainsu/CS_CLASSES/cs374/hw3
+: 
+: 
+: --------------------
+: cd
+: : 
+: 
+: --------------------
+: pwd (10 points for being in the HOME dir)
+: /nfs/stak/users/jainsu
+: 
+: 
+: --------------------
+: mkdir testdir180551
+: : 
+: 
+: --------------------
+: cd testdir180551
+: : 
+: 
+: --------------------
+: pwd (5 points for being in the newly created dir)
+: /nfs/stak/users/jainsu/testdir180551
+: --------------------
+: Testing foreground-only mode (20 points for entry & exit text AND ~5 seconds between times)
+: Entering foreground-only mode (& is now ignored)
+: Mon May 20 12:33:22 PDT 2024
+: : Mon May 20 12:33:27 PDT 2024
+: Exiting foreground-only mode
+: 

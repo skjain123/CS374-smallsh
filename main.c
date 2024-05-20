@@ -9,6 +9,8 @@
 #include <sys/types.h>
 #include <signal.h>
 
+#define _XOPEN_SOURCE 700
+
 #define EXIT_KEY        "exit"
 #define CDIR_KEY        "cd"
 #define STAT_KEY        "status"
@@ -25,6 +27,8 @@
 #define PID_SYMBOL      "$$"
 
 volatile sig_atomic_t sigint_received = 0;
+volatile sig_atomic_t foreground_only_mode = 0;
+volatile pid_t foreground_pid = -1;
 
 struct arr {
     char* command[MAX_ARG];
@@ -42,13 +46,12 @@ struct arr {
     int exit_flag;
 };
 
-void print_console (char input[MAX_CHAR], char cwd[1024]) {
+void print_console (char input[MAX_CHAR]) {
     char userInput[MAX_CHAR];
 
     /* get user input */
-    /* printf("smallsh ~%s : ", cwd); */
     printf(": ");
-    fflush(stderr);
+    fflush(stdout);
 
     fgets(userInput, MAX_CHAR, stdin);
     if (strlen(userInput) > 0 && userInput[strlen(userInput) - 1] == '\n') {
@@ -86,14 +89,18 @@ void process_input(char input[MAX_CHAR], struct arr *cmd) {
 }
 
 void remove_from_command (struct arr* cmd, int index) {
-    printf("removing : %s\n", cmd->command[index]);
+    
+    
+    if (cmd->command[index] != NULL) {
+        free(cmd->command[index]);
 
-    free(cmd->command[index]);
-
-    for (int i = index; i < cmd->arg_num; i++) {
-        cmd->command[i] = cmd->command[i+1];
+        for (int i = index; i < cmd->arg_num - 1; i++) {
+            cmd->command[i] = cmd->command[i+1];
+        }
+        cmd->command[cmd->arg_num - 1] = NULL;
+        cmd->arg_num--;
     }
-    cmd->arg_num--;
+    
 }
 
 void get_input_output_background(struct arr* cmd) {
@@ -103,27 +110,27 @@ void get_input_output_background(struct arr* cmd) {
 
     for (int i = 0; i < cmd->arg_num && cmd->command[i] != NULL; i++) {
         if (strcmp(cmd->command[i], INPUT_KEY) == 0) {
-            if (cmd->command[i+1]) {
+            if (i + 1 < cmd->arg_num) {
                 strcpy(cmd->input_file, cmd->command[i+1]);
-                remove_from_command(cmd, i);
-                remove_from_command(cmd, i+1);
+                remove_from_command(cmd, i); // remove <
+                remove_from_command(cmd, i); // remove input filename
 
                 cmd->input_bool = 1;
             } else {
                 printf("No input file provided!\n");
-                fflush(stderr);
+                fflush(stdout);
             }
             
         } else if (strcmp(cmd->command[i], OUTPUT_KEY) == 0) {
-            if (cmd->command[i+1]) {
+            if (i + 1 < cmd->arg_num) {
                 strcpy(cmd->output_file, cmd->command[i+1]);
-                remove_from_command(cmd, i);
-                remove_from_command(cmd, i+1);
+                remove_from_command(cmd, i); // remove > 
+                remove_from_command(cmd, i); // remove output filename
 
                 cmd->output_bool = 1;
             } else {
                 printf("No output file provided!\n");
-                fflush(stderr);
+                fflush(stdout);
             }
         }
     }
@@ -132,16 +139,20 @@ void get_input_output_background(struct arr* cmd) {
 void print_command (struct arr cmd) {
     for (int i = 0; i < cmd.arg_num && cmd.command[i] != NULL; i++) {
         printf("%s ", cmd.command[i]);
-        fflush(stderr);
+        fflush(stdout);
     }
     printf("\n");
-    fflush(stderr);
+    fflush(stdout);
 }
 
 void free_cmd(struct arr *cmd) {
-    for (int i = 0; i < MAX_ARG && cmd->command[i] != NULL; i++) {
-        free(cmd->command[i]);
+    for (int i = 0; i < cmd->arg_num; i++) {
+        if (cmd->command[i] != NULL) {
+            free(cmd->command[i]);
+            cmd->command[i] = NULL;
+        }
     }
+    cmd->arg_num = 0;
 }
 
 void exit_smallsh (struct arr* cmd) {
@@ -151,7 +162,7 @@ void exit_smallsh (struct arr* cmd) {
         cmd->exit_flag = 1;
     } else {
         printf(EXTRA_ARGS);
-        fflush(stderr);
+        fflush(stdout);
     }
 }
 
@@ -162,69 +173,73 @@ void change_dir(struct arr* cmd) {
         chdir(getenv("HOME"));
         
     } else if (cmd->arg_num == 2) {
-        chdir(cmd->command[1]);
+        if (chdir(cmd->command[1]) != 0) {
+            perror("chdir");
+        }
     } else {
         printf(EXTRA_ARGS);
+        fflush(stdout);
     }
-
-    fflush(stderr);
-
 }
 
-void display_status(struct arr* cmd, int exit_status) {
+void display_status(int exit_status) {
 
-    if (exit_status != 0) {
-        printf("%d\n", exit_status);
-        fflush(stderr);
-    } else {
-        printf("%d\n", 0);
-        fflush(stderr);
+    if (WIFEXITED(exit_status)) {
+        printf("exit value %d\n", WEXITSTATUS(exit_status));
+    } else if (WIFSIGNALED(exit_status)) {
+        printf("terminated by signal %d\n", WTERMSIG(exit_status));
     }
-    cmd->built_in_command_flag = 1;
-
-    printf("print status\n");
-    fflush(stderr);
-}
-
-void child_command(struct arr* cmd, int output_fd) {
+    fflush(stdout);
     
-    // Redirect the stdout of the child process to output_fd
+}
 
-    if (cmd->output_bool == 1) {
-        if (dup2(output_fd, STDOUT_FILENO) == -1) {
-            perror("dup2 failed");
+void child_command(struct arr* cmd) {
+    // Redirect input if specified
+    if (cmd->input_bool) {
+        int input_fd = open(cmd->input_file, O_RDONLY);
+        if (input_fd == -1) {
+            perror("open input file");
+            fflush(stdout);
             exit(EXIT_FAILURE);
         }
+        if (dup2(input_fd, STDIN_FILENO) == -1) {
+            perror("dup2 input");
+            fflush(stdout);
+            exit(EXIT_FAILURE);
+        }
+        close(input_fd);
+    }
 
-        // Close the original output_fd as it's no longer needed
+    // Redirect output if specified
+    if (cmd->output_bool) {
+        int output_fd = open(cmd->output_file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+        if (output_fd == -1) {
+            perror("open output file");
+            fflush(stdout);
+            exit(EXIT_FAILURE);
+        }
+        if (dup2(output_fd, STDOUT_FILENO) == -1) {
+            perror("dup2 output");
+            fflush(stdout);
+            exit(EXIT_FAILURE);
+        }
         close(output_fd);
     }
 
     // Execute the command
     execvp(cmd->command[0], cmd->command);
 
-    if (cmd->background_process_flag == 1) {
-        printf("Background process with PID %d terminated.\n", getpid());
-        fflush(stdout);
-    }
-
-    // If execvp fails, it will reach here
+    // If execvp fails
     perror("execvp failed");
+    fflush(stdout);
     exit(EXIT_FAILURE);
 }
 
+
 void parent_command(int flag, pid_t pid, int* exit_status) {
-    if (flag == 0) { /* only wait for the foreround processes */
-        int status;
-        waitpid(pid, &status, 0); /* wait for child process to finish */
-        *exit_status = WEXITSTATUS(status);
-        /* printf("Foreground process with PID %d has terminated.\n", pid); */
-        fflush(stderr);
-        return;
-    } else {
-        /* printf("Background process with PID %d terminated.\n", pid); */
-        fflush(stderr);
-        return;
+
+    if (flag == 0) { /* only wait for the foreground processes */
+        waitpid(pid, exit_status, 0); /* wait for child process to finish */
     }
 }
 
@@ -237,34 +252,64 @@ void sigchld_handler(int signum) {
     is not already dead, return (pid_t) 0. If successful,
     return PID and store the dead child's status in STAT_LOC. 
     */
-   /* printf("in the sig child handler\n"); */
     while ((pid = waitpid(-1, &status, WNOHANG)) > 0) {
-        printf("Cdhild process with PID %d terminated\n", pid);
+        if (!foreground_only_mode) {
+            printf("background pid %d is done: ", pid);
+            if (WIFEXITED(status)) {
+                printf("exit value %d\n", WEXITSTATUS(status));
+            } else if (WIFSIGNALED(status)) {
+                printf("terminated by signal %d\n", WTERMSIG(status));
+            }
+            fflush(stdout);
+        }
     }
 }
 
-void sigint_handler (int signum) {
-    printf("\n");
-    sigint_received = 0;
+void sigint_handler(int signum) {
+    if (foreground_pid != -1) {
+        kill(foreground_pid, SIGINT);
+    }
+
+    fflush(stdout);
 }
 
-void sigstp_handler () {
-    printf("SIGSTP HANDLED\n");
+void sigtstp_handler(int signum) {
+    if (foreground_only_mode) {
+        foreground_only_mode = 0;
+        printf("Exiting foreground-only mode\n");
+    } else {
+        foreground_only_mode = 1;
+        printf("Entering foreground-only mode (& is now ignored)\n");
+    }
+    fflush(stdout);
 }
+
+void setup_signal_handlers() {
+    
+    struct sigaction sa_int = { .sa_handler = sigint_handler, .sa_flags = SA_RESTART };
+    sigfillset(&sa_int.sa_mask);
+    sigaction(SIGINT, &sa_int, NULL);
+
+    struct sigaction sa_chld = { .sa_handler = sigchld_handler, .sa_flags = SA_RESTART };
+    sigfillset(&sa_chld.sa_mask);
+    sigaction(SIGCHLD, &sa_chld, NULL);
+
+    struct sigaction sa_tstp = { .sa_handler = sigtstp_handler, .sa_flags = SA_RESTART };
+    sigfillset(&sa_tstp.sa_mask);
+    sigaction(SIGTSTP, &sa_tstp, NULL);
+}
+
 
 void replace_PID_SYMBOL(struct arr* cmd) {
 
     char pid_str[MAX_CHAR];
     sprintf(pid_str, "%d", getpid());
-
     int pid_len = strlen(pid_str);
 
     for (int i = 0; i < cmd->arg_num && cmd->command[i] != NULL; i++) {
         char* symbol = strstr(cmd->command[i], PID_SYMBOL);
 
         while (symbol != NULL) {
-            /* int index = symbol - cmd->command[i]; */
-
             memmove(symbol + strlen(pid_str), symbol + strlen(PID_SYMBOL), strlen(symbol) - strlen(PID_SYMBOL) + 1);
             memcpy(symbol, pid_str, pid_len);
 
@@ -281,7 +326,8 @@ int built_in_commands(struct arr* cmd, int* exit_status) {
     } else if (strcmp(cmd->command[0], CDIR_KEY) == 0) {
         change_dir(cmd);
     } else if (strcmp(cmd->command[0], STAT_KEY) == 0) {
-        display_status(cmd, *exit_status);
+        display_status(*exit_status);
+        cmd->built_in_command_flag = 1;
     }
 
     return 1;
@@ -291,127 +337,81 @@ void run_smallsh(struct arr* cmd, char input[MAX_CHAR]) {
     
     int exit_status = 0;
 
-    char cwd[MAX_CHAR];
-    getcwd(cwd, sizeof(cwd));
-
-    signal(SIGINT, sigint_handler);
-    signal(SIGTSTP, sigstp_handler);
+    setup_signal_handlers();
 
     do {
-        print_console(input, cwd);
+        print_console(input);
 
         cmd->background_process_flag = 0;
         cmd->built_in_command_flag = 0;
         cmd->output_bool = 0;
         cmd->input_bool = 0;
 
-        /* parse the input into the command variable, an array of strings (char*) */
         process_input(input, cmd);
-
-        /* check for proper amount of arguements */
         if (cmd->arg_num <= 0) {
             continue;
         }
 
         replace_PID_SYMBOL(cmd);
 
-        /* check for comments */
-        if (cmd->command[0][0] && cmd->command[0][0] == '#') {
+        if (cmd->command[0][0] == '#') {
             continue;
         }
 
-        /* check if the command is a background process */
-        if (strcmp(cmd->command[cmd->arg_num - 1], BACKGROUND_KEY) == 0) {
-            fflush(stderr);
+        get_input_output_background(cmd);
+
+        if (strcmp(cmd->command[cmd->arg_num-1], BACKGROUND_KEY) == 0) {
             cmd->background_process_flag = 1;
             remove_from_command(cmd, cmd->arg_num - 1);
         }
 
-        /* sets the input and output file if the special characters exist */
-        get_input_output_background(cmd);
-
-        /* print_command(*cmd); */
-        
-        if (built_in_commands(cmd, &exit_status) == 0) {
+        if (!built_in_commands(cmd, &exit_status)) {
             break;
         }
 
-        if (cmd->built_in_command_flag == 1) {
+        if (cmd->built_in_command_flag) {
             free_cmd(cmd);
             continue;
         }
 
-        signal(SIGCHLD, sigchld_handler);
-
         pid_t pid = fork();
-
-        if (pid < 0) {
-            printf("fork unsuccessful\n");
-            fflush(stderr);
+        if (pid == -1) {
+            perror("fork");
             exit(EXIT_FAILURE);
         } else if (pid == 0) {
-
-            int output_fd = stdout;
-            
-            if (cmd->background_process_flag == 0) {
-                if (cmd->output_bool == 1) {
-                    FILE* out = fopen(cmd->output_file, "w");
-
-                    fclose(out);
-
-                    output_fd = open(cmd->output_file, O_WRONLY | O_CREAT | O_APPEND, 0666);
-                    if (output_fd == -1) {
-                        perror("open failed");
-                        exit(EXIT_FAILURE);
-                    }
-                }
-
-                child_command(cmd, output_fd);
-
-                close(output_fd);
-
-            } else {
-
-                int original_stdout = dup(STDOUT_FILENO);  // Save current stdout for later restoration
-                int output_fd = open("/dev/null", O_WRONLY);  // Open /dev/null for redirection
-
-                /* Redirect stdout to /dev/null */
-                if (dup2(output_fd, STDOUT_FILENO) == -1) {
-                    perror("dup2 failed");
-                    exit(EXIT_FAILURE);
-                }
-
-                // Close fd for /dev/null
-                close(output_fd);
-
-                /* Execute command */
-                child_command(cmd, original_stdout);
-
-                /* Restore stdout */
-                dup2(original_stdout, STDOUT_FILENO);
-                close(original_stdout);
-
-                /* printf("Background process with PID %d has finished.\n", getpid()); */
+            if (cmd->background_process_flag && !foreground_only_mode) {
+                printf("background pid is %d\n", getpid());
                 fflush(stdout);
-
-                exit(EXIT_SUCCESS);
+            } else {
+                signal(SIGINT, SIG_DFL);
             }
+            child_command(cmd);
         } else {
-            parent_command(cmd->background_process_flag, pid, &exit_status);
+            if (cmd->background_process_flag && !foreground_only_mode) {
+                signal(SIGCHLD, sigchld_handler);
+            } else {
+                foreground_pid = pid;
+                waitpid(pid, &exit_status, 0);
+                foreground_pid = -1;
+                /* display_status(exit_status); */
+            }
         }
 
         free_cmd(cmd);
-    } while (cmd->exit_flag == 0);
+    } while (!cmd->exit_flag);
 }
-
 
 int main(void)
 {
     char input[MAX_CHAR];
 
     struct arr cmd;
+
     cmd.arg_num = 0;
     cmd.exit_flag = 0;
+
+    memset(&cmd, 0, sizeof(cmd));
+    memset(input, 0, sizeof(input));
 
     run_smallsh(&cmd, input);
 
